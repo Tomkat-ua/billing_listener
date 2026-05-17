@@ -10,7 +10,7 @@ RUN curl -1sLf 'https://artifacts-cli.infisical.com/setup.deb.sh' | bash \
 WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-COPY app.py
+COPY app.py .
 
 # 3. ЗАМІСТЬ звичайного "python main.py" ми запускаємо додаток через INFISICAL RUN!
 # Ми кажемо йому стягнути дані з трьох папок одночасно
