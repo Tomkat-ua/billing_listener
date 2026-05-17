@@ -1,33 +1,22 @@
-# Використовуємо легкий образ Python на базі Alpine Linux
-FROM python:3.11-alpine
+FROM python:3.11-slim
 
-# Встановлюємо системні залежності для pymysql та роботи з мережею
-# Alpine потребує gcc та musl-dev для деяких пакетів, але для pymysql зазвичай достатньо чистого пітона
-RUN apk add --no-cache gcc musl-dev mariadb-connector-c-dev
+# 1. Встановлюємо залежності для інсталяції
+RUN apt-get update && apt-get install -y curl bash sudo && rm -rf /var/lib/apt/lists/*
 
-# Створюємо робочу директорію
+# 2. Ставимо Infisical CLI прямо всередину контейнера
+RUN curl -1sLf 'https://artifacts-cli.infisical.com/setup.deb.sh' | bash \
+    && apt-get update && apt-get install -y infisical
+
 WORKDIR /app
-
-# Спочатку копіюємо лише requirements, щоб кешувати встановлення бібліотек
 COPY requirements.txt .
-
-# Встановлюємо залежності
 RUN pip install --no-cache-dir -r requirements.txt
+COPY app.py
 
-# Копіюємо основний код додатка
-COPY app.py .
+# 3. ЗАМІСТЬ звичайного "python main.py" ми запускаємо додаток через INFISICAL RUN!
+# Ми кажемо йому стягнути дані з трьох папок одночасно
+#CMD ["infisical", "run", "--path=/actual", "--path=/bank", "--path=/database", "--", "python", "main.py"]
+# ... (твоє встановлення залежностей та копіювання коду) ...
 
-# Створюємо папку для секретів (куди буде монтуватися tmpfs)
-RUN mkdir -p /app/secrets
+# Замість старого CMD загортаємо запуск uvicorn в утиліту Infisical
+CMD ["infisical", "run", "--path=/actual", "--path=/bank", "--path=/database", "--", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000", "--interface", "wsgi"]
 
-# Відкриваємо порт 8000
-EXPOSE 8000
-
-# Запускаємо сервер.
-# Використовуємо --interface wsgi, бо ми працюємо з Flask через Uvicorn
-#CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000", "--interface", "wsgi"]
-
-
-# Запускаємо чистий Gunicorn з синхронними воркерами
-# -w 4: для пре-проду на mini-PC можна поставити 2-4 воркери
-CMD ["gunicorn", "-w", "2", "-b", "0.0.0.0:8000", "--access-logfile", "-", "--error-logfile", "-", "app:app"]
