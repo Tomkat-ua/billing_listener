@@ -1,38 +1,19 @@
 import os,logging,requests,threading,time
 import pymysql
 from flask import Flask, request
-from pathlib import Path
-from dotenv import load_dotenv
-
-# Вказуємо точний шлях до нашого RAM-диску
-env_path = Path("/app/secrets/.env")
-
-if env_path.exists():
-    load_dotenv(dotenv_path=env_path)
-    print("Секрети успішно завантажено в пам'ять процесу!")
-else:
-    print("Помилка: файл .env не знайдено в оперативці!")
-
-# Вказуємо точний шлях до нашого RAM-диску
-env_path = Path("/app/secrets/.env")
-
-if env_path.exists():
-    load_dotenv(dotenv_path=env_path)
-    print("Секрети успішно завантажено в пам'ять процесу!")
-else:
-    print("Помилка: файл .env не знайдено в оперативці!")
-
+# from pathlib import Path
+# from dotenv import load_dotenv
 
 
 app = Flask(__name__)
-
-env_path = Path("/app/secrets/.env")
-
-if env_path.exists():
-    load_dotenv(dotenv_path=env_path)
-    print("Секрети успішно завантажено в пам'ять процесу!")
-else:
-    print("Помилка: файл .env не знайдено в оперативці!")
+#
+# env_path = Path("/app/secrets/.env")
+#
+# if env_path.exists():
+#     load_dotenv(dotenv_path=env_path)
+#     print("Секрети успішно завантажено в пам'ять процесу!")
+# else:
+#     print("Помилка: файл .env не знайдено в оперативці!")
 
 
 # logging.basicConfig(level=logging.INFO)
