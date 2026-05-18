@@ -10,7 +10,8 @@ RUN curl -1sLf 'https://artifacts-cli.infisical.com/setup.deb.sh' | bash \
 WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-COPY app.py .
+COPY *.py .
 
 # Оновлений запуск: додаємо python -m та явно вказуємо параметри проєкту
-CMD ["infisical", "run", "--projectId=d6d3e764-7ce7-4a6a-b878-33c64433b9de", "--env=dev", "--path=/actual", "--path=/bank", "--path=/database", "--", "python", "-m", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000", "--interface", "wsgi"]
+#CMD ["infisical", "run", "--projectId=d6d3e764-7ce7-4a6a-b878-33c64433b9de", "--env=dev", "--path=/actual", "--path=/bank", "--path=/database", "--", "python", "-m", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000", "--interface", "wsgi"]
+CMD ["python", "-m", "uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000", "--interface", "wsgi"]
