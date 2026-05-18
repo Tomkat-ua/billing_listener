@@ -40,7 +40,7 @@ DB_CONFIG = {
 debug_mode = int(os.getenv('DEBUG_MODE',0))
 
 if debug_mode == 1:
-    print(DB_CONFIG)
+    print('DB_CONFIG',DB_CONFIG)
 
 def register_webhook():
     """Функція автоматичної реєстрації нашого URL в Monobank"""
