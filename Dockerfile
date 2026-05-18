@@ -1,11 +1,12 @@
-FROM python:3.11-slim
+#FROM python:3.11-slim
+FROM python-infisical:3.11
 
 # 1. Встановлюємо залежності для інсталяції
-RUN apt-get update && apt-get install -y curl bash sudo && rm -rf /var/lib/apt/lists/*
+#RUN apt-get update && apt-get install -y curl bash sudo && rm -rf /var/lib/apt/lists/*
 
 # 2. Ставимо Infisical CLI прямо всередину контейнера
-RUN curl -1sLf 'https://artifacts-cli.infisical.com/setup.deb.sh' | bash \
-    && apt-get update && apt-get install -y infisical
+#RUN curl -1sLf 'https://artifacts-cli.infisical.com/setup.deb.sh' | bash \
+#    && apt-get update && apt-get install -y infisical
 
 WORKDIR /app
 COPY requirements.txt .
