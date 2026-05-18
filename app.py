@@ -1,6 +1,8 @@
-import os,logging,requests,threading,time
-import pymysql
+import logging,requests,threading,time,pymysql
+from dotenv import load_dotenv
+import config as c
 from flask import Flask, request
+
 # from pathlib import Path
 # from dotenv import load_dotenv
 
@@ -12,34 +14,32 @@ app = Flask(__name__)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Секрети (локально беруться дефолти, в Docker прилетять з Infisical)
-X_TOKEN = os.environ.get('MONO_API_KEY', 'erererfvffvfv45454545')
+X_TOKEN = c.params.get('bill_webhook_token')
 # Зовнішня адреса вашого сервера (наприклад, через Cloudflare Tunnel чи білий IP)
-WEBHOOK_URL = os.environ.get('BILL_WEBHOOK_URL', 'http://127.0.0.1:8000/webhook')
+WEBHOOK_URL = c.params.get('bill_webhook_url') # os.getenv('BILL_WEBHOOK_URL', 'http://127.0.0.1:8000/webhook')
 WEBHOOK_ROUTE = WEBHOOK_URL.rsplit('/', 1)[-1]
 
-
-# Замість модуля config — беремо прямо з оточення (Infisical)
 DB_CONFIG = {
-    'host': os.getenv('DB_HOST','127.0.0.1'),
-    'port': int(os.environ.get('DB_PORT', 3307)),
-    'user': os.getenv('DB_USER','billing_user'),
-    'password': os.getenv('DB_PASSWORD','wssASD4TRaS'),
-    'database': os.getenv('DB_NAME','billing_system'),
-    'charset': 'utf8mb4',
+    'host'    : c.params.get('db_host'), #c.db_host,
+    'port'    : c.params.get('db_port'), #int(c.db_port),
+    'user'    : c.params.get('db_user'), #c.db_user,
+    'password': c.params.get('db_password'), # c.db_password,
+    'database': c.params.get('db_name'), #c.db_name,
+    'charset' : 'utf8mb4',
     'cursorclass': pymysql.cursors.DictCursor
 }
 
-debug_mode = int(os.getenv('DEBUG_MODE',0))
 
-if debug_mode == 1:
-    print('DB_CONFIG',DB_CONFIG)
+# if c.params.get('debug_mode') == 1:
+#     for item in DB_CONFIG.items():
+#         print(item)
 
 def register_webhook():
     """Функція автоматичної реєстрації нашого URL в Monobank"""
     # Даємо серверу Uvicorn 2 секунди, щоб повністю піднятися
     time.sleep(2)
 
-    url = os.getenv('MONO_WEBHOOK_URL', "https://api.monobank.ua/bank/webhook")
+    url = c.params.get('MONO_WEBHOOK_URL') #os.getenv('MONO_WEBHOOK_URL', "https://api.monobank.ua/bank/webhook")
     headers = {"X-Token": X_TOKEN}
     payload = {"webHookUrl": WEBHOOK_URL}
 
@@ -71,13 +71,6 @@ def save_json(raw_payload):
 
 @app.route(f'/{WEBHOOK_ROUTE}', methods=['GET', 'POST'])
 def monobank_webhook():
-    logging.info("--- ТЕСТ КОНФІГУ БАЗИ ПРИ ЗАПИТІ ---")
-    logging.info(f"HOST: {DB_CONFIG['host']}")
-    logging.info(f"PORT: {DB_CONFIG['port']} (тип: {type(DB_CONFIG['port'])})")
-    logging.info(f"USER: {DB_CONFIG['user']}")
-    logging.info("------------------------------------")
-
-
     # 1. ОБРОБКА GET-ЗАПИТУ (Валідація від банку під час реєстрації)
     if request.method == 'GET':
         app.logger.info("Отримано GET-запит від Monobank для валідації URL.")
