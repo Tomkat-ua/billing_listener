@@ -71,6 +71,13 @@ def save_json(raw_payload):
 
 @app.route(f'/{WEBHOOK_ROUTE}', methods=['GET', 'POST'])
 def monobank_webhook():
+    logging.info("--- ТЕСТ КОНФІГУ БАЗИ ПРИ ЗАПИТІ ---")
+    logging.info(f"HOST: {DB_CONFIG['host']}")
+    logging.info(f"PORT: {DB_CONFIG['port']} (тип: {type(DB_CONFIG['port'])})")
+    logging.info(f"USER: {DB_CONFIG['user']}")
+    logging.info("------------------------------------")
+
+
     # 1. ОБРОБКА GET-ЗАПИТУ (Валідація від банку під час реєстрації)
     if request.method == 'GET':
         app.logger.info("Отримано GET-запит від Monobank для валідації URL.")
