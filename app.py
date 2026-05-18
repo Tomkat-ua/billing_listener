@@ -1,5 +1,5 @@
 import logging,requests,threading,time,pymysql
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 import config as c
 from flask import Flask, request
 
