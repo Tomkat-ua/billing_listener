@@ -8,9 +8,9 @@ FROM python-infisical:3.11
 #RUN curl -1sLf 'https://artifacts-cli.infisical.com/setup.deb.sh' | bash \
 #    && apt-get update && apt-get install -y infisical
 
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+#WORKDIR /app
+#COPY requirements.txt .
+#RUN pip install --no-cache-dir -r requirements.txt
 COPY *.py .
 
 # Оновлений запуск: додаємо python -m та явно вказуємо параметри проєкту
