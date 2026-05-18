@@ -37,6 +37,10 @@ DB_CONFIG = {
     'cursorclass': pymysql.cursors.DictCursor
 }
 
+debug_mode = int(os.getenv('DEBUG_MODE',0))
+
+if debug_mode == 1:
+    print(DB_CONFIG)
 
 def register_webhook():
     """Функція автоматичної реєстрації нашого URL в Monobank"""
