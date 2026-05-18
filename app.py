@@ -6,14 +6,6 @@ from flask import Flask, request
 
 
 app = Flask(__name__)
-#
-# env_path = Path("/app/secrets/.env")
-#
-# if env_path.exists():
-#     load_dotenv(dotenv_path=env_path)
-#     print("Секрети успішно завантажено в пам'ять процесу!")
-# else:
-#     print("Помилка: файл .env не знайдено в оперативці!")
 
 
 # logging.basicConfig(level=logging.INFO)
