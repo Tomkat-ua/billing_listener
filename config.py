@@ -30,27 +30,21 @@ def get_secret_value(secret_name,env,path):
     return secret.secretValue
 
 params = {
-
+# MariaDB params
     'db_host'        : get_secret_value("DB_HOST", secret_env,"/database"),
     'db_port'        : int(get_secret_value("DB_PORT", secret_env,"/database")),
     'db_user'        : get_secret_value("DB_USER", secret_env,"/database"),
     'db_password'    : get_secret_value("DB_PASSWORD", secret_env,"/database"),
     'db_name'        : get_secret_value("DB_NAME", secret_env,"/database"),
-    'bank_api_url'   : get_secret_value("MONO_API_URL",secret_env,"/bank"),
-    'actual_api_url' : get_secret_value("ACTUAL_API_SERVER_URL",secret_env,"/actual"),
-    'actual_sync_id' : get_secret_value("ACTUAL_SYNC_ID",secret_env,"/actual"),
-    'actual_api_key' : get_secret_value('ACTUAL_API_KEY',secret_env,"/actual"),
-    'cur_rate_url'   : get_secret_value('CUR_RATE_URL',secret_env,"/bank"),
+
+# MONO params
     'bill_webhook_url'   : get_secret_value('BILL_WEBHOOK_URL',secret_env,"/bank"),
-    'bill_webhook_token' : get_secret_value('BILL_WEBHOOK_TOKEN',secret_env,'/bank'),
-    'mono_webhook_url'   : get_secret_value('MONO_WEBHOOK_URL',secret_env,'/bank'),
+
+# sus params
     'debug_mode' : int(os.getenv('DEBUG_MODE',0)),
     'env' : os.getenv('ENV')
 }
 
-
 if params.get('debug_mode') == 1:
     for key,value in params.items():
         print(key,':',value)
-
-
