@@ -1,45 +1,36 @@
-import logging,requests,threading,time,pymysql
-# from dotenv import load_dotenv
+import logging,requests,time,pymysql
 import config as c
 from flask import Flask, request
-
-# from pathlib import Path
-# from dotenv import load_dotenv
-
 
 app = Flask(__name__)
 
 
-# logging.basicConfig(level=logging.INFO)
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Секрети (локально беруться дефолти, в Docker прилетять з Infisical)
 X_TOKEN = c.params.get('bill_webhook_token')
+
 # Зовнішня адреса вашого сервера (наприклад, через Cloudflare Tunnel чи білий IP)
-WEBHOOK_URL = c.params.get('bill_webhook_url') # os.getenv('BILL_WEBHOOK_URL', 'http://127.0.0.1:8000/webhook')
+WEBHOOK_URL = c.params.get('bill_webhook_url')
 WEBHOOK_ROUTE = WEBHOOK_URL.rsplit('/', 1)[-1]
 
 DB_CONFIG = {
-    'host'    : c.params.get('db_host'), #c.db_host,
-    'port'    : c.params.get('db_port'), #int(c.db_port),
-    'user'    : c.params.get('db_user'), #c.db_user,
-    'password': c.params.get('db_password'), # c.db_password,
-    'database': c.params.get('db_name'), #c.db_name,
+    'host'    : c.params.get('db_host'),
+    'port'    : c.params.get('db_port'),
+    'user'    : c.params.get('db_user'),
+    'password': c.params.get('db_password'),
+    'database': c.params.get('db_name'),
     'charset' : 'utf8mb4',
     'cursorclass': pymysql.cursors.DictCursor
 }
 
-
-# if c.params.get('debug_mode') == 1:
-#     for item in DB_CONFIG.items():
-#         print(item)
 
 def register_webhook():
     """Функція автоматичної реєстрації нашого URL в Monobank"""
     # Даємо серверу Uvicorn 2 секунди, щоб повністю піднятися
     time.sleep(2)
 
-    url = c.params.get('MONO_WEBHOOK_URL') #os.getenv('MONO_WEBHOOK_URL', "https://api.monobank.ua/bank/webhook")
+    url = c.params.get('MONO_WEBHOOK_URL')
     headers = {"X-Token": X_TOKEN}
     payload = {"webHookUrl": WEBHOOK_URL}
 
@@ -79,7 +70,7 @@ def monobank_webhook():
     # 2. ОБРОБКА POST-ЗАПИТУ (Отримання реальних транзакцій)
     if request.method == 'POST':
         try:
-            # Отримуємо сирий текст запиту, щоб передати його в базу як чистий JSON-рядок
+
             raw_data = request.get_data(as_text=True)
 
             if not raw_data:
@@ -88,7 +79,7 @@ def monobank_webhook():
 
             app.logger.info("Отримано вебхук від Monobank. Запис в MariaDB...")
 
-            # Викликаємо вашу функцію збереження
+
             save_json(raw_data)
 
             app.logger.info("Успішно: Транзакцію збережено в raw_webhooks.")
@@ -101,7 +92,3 @@ def monobank_webhook():
         except Exception as e:
             app.logger.error(f"Загальна помилка при обробці вебхука: {e}")
             return "Error", 200
-
-
-# if __name__ == '__main__':
-#     app.run(host='0.0.0.0', port=5000)
